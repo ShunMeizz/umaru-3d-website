@@ -135,6 +135,7 @@ canvas {
   text-align: center;
   font-size: 1.2em;
   border-radius: 0.9em;
+  background-color: white;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.6);
   overflow: hidden;
 }

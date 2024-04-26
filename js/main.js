@@ -2,9 +2,8 @@ const scene = new THREE.Scene(); //Create the scene
 const camera = new THREE.PerspectiveCamera(
   75, //Field of view
   window.innerWidth / window.innerHeight, //Aspect ratio
-  0,
-  1, //Near
-  1000 //Far
+  0.1, //Near clipping plane
+  1000 //Far clipping plane
 );
 scene.add(camera);
 camera.position.z = 5; //Don't forget to move backward 5 units to see our scene when rendered
@@ -31,5 +30,96 @@ let geometry = new THREE.BoxGeometry(1, 1, 1); //BoxGeometry is the shape of the
 let material = new THREE.MeshBasicMaterial({ color: "blue" }); //color of the object
 const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
-//Render
-renderer.render(scene, camera);
+
+//Controls
+document.addEventListener("keydown", onKeyDown, false); //Event Listener for when we press the keys
+
+//Texture of the floor
+let floorTexture = new THREE.ImageUtils.loadTexture("images/floor.png"); //ImageUtils is deprecated in the newer versions of THREE.js
+
+//let floorTexture = new THREE.TextureLoader().load('images/floor.png');
+
+//Create the floor plane
+let planeGeometry = new THREE.PlaneGeometry(50, 50);
+let planeMaterial = new THREE.MeshBasicMaterial({
+  map: floorTexture,
+  side: THREE.DoubleSide,
+});
+let floorPlane = new THREE.Mesh(planeGeometry, planeMaterial);
+floorPlane.rotation.x = Math.PI / 2; //this is 90 degrees
+floorPlane.position.y = -Math.PI; //this is -180 degrees
+scene.add(floorPlane);
+
+//Create the ceil plane
+const ceilingGeometry = new THREE.PlaneGeometry(50, 50);
+const ceilingMaterial = new THREE.MeshBasicMaterial({
+  color: "white",
+});
+let ceilPlane = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
+ceilPlane.rotation.x = Math.PI / 2; //this is 90 degrees
+ceilPlane.position.y = 14;
+scene.add(ceilPlane);
+
+//Create the walls
+const wallGroup = new THREE.Group(); //create a group to hold the walls
+scene.add(wallGroup);
+//Front wall
+const frontWall = new THREE.Mesh(
+  new THREE.BoxGeometry(50, 20, 0.001),
+  new THREE.MeshBasicMaterial({ color: "green" })
+);
+frontWall.position.z = -20;
+
+//Left Wall
+const leftWall = new THREE.Mesh(
+  new THREE.BoxGeometry(50, 20, 0.001),
+  new THREE.MeshBasicMaterial({
+    color: "red",
+  })
+);
+leftWall.rotation.y = Math.PI / 2;
+leftWall.position.x = -20;
+
+//Right Wall
+const rightWall = new THREE.Mesh(
+  new THREE.BoxGeometry(50, 20, 0.001),
+  new THREE.MeshBasicMaterial({ color: "black" })
+);
+rightWall.rotation.y = Math.PI / 2;
+rightWall.position.x = 20;
+
+wallGroup.add(frontWall, leftWall, rightWall);
+
+//Loop through each wall and create the bounding box
+for (let i = 0; i < wallGroup.children.length; i++) {
+  wallGroup.children[i].BBox = new THREE.Box3();
+  wallGroup.children[i].BBox.setFromObject(wallGroup.children[i]);
+}
+
+//function when a key is pressed, execute this function
+function onKeyDown(event) {
+  let keycode = event.which;
+
+  //right arrow key
+  if (keycode === 39) {
+    camera.translateX(-0.05);
+    //left arrow key
+  } else if (keycode === 37) {
+    camera.translateX(0.05);
+    //up arrow key
+  } else if (keycode === 38) {
+    camera.translateY(-0.05);
+    //down arrow key
+  } else if (keycode === 40) {
+    camera.translateY(0.05);
+  }
+}
+
+let renderLoop = function () {
+  cube.rotation.x = cube.rotation.x + 0.01;
+  cube.rotation.y = cube.rotation.y + 0.01;
+  renderer.render(scene, camera); //renders the scene
+  requestAnimationFrame(renderLoop);
+};
+
+renderLoop();
