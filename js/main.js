@@ -1,3 +1,5 @@
+import * as THREE from "three";
+
 const scene = new THREE.Scene(); //Create the scene
 const camera = new THREE.PerspectiveCamera(
   75, //Field of view
@@ -11,17 +13,15 @@ camera.position.z = 5; //Don't forget to move backward 5 units to see our scene 
 const renderer = new THREE.WebGLRenderer({
   antialias: true, //For smooth edges
 });
-
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0xfffff, 1); //Background color
 document.body.appendChild(renderer.domElement); //Add the renderer to our html
 
-//Let there be light!
-//Ambient Light
+//Ambient Light is a soft light that lights up all te objects in the scene equally
 let ambientLight = new THREE.AmbientLight(0x101010, 1.0); //color, intensity, distance
-ambientLight.position = camera.position; //light follows camera
+//ambientLight.position = camera.position; //light follows camera
 scene.add(ambientLight);
-//Directional Light
+//Directional Light is a light source that acts like a sun, that illuminates all the objects in the scene equally from a specific direction
 let sunLight = new THREE.DirectionalLight(0xddddd, 1.0); //color, intensity
 sunLight.position.y = 15;
 scene.add(sunLight);
@@ -35,9 +35,9 @@ scene.add(cube);
 document.addEventListener("keydown", onKeyDown, false); //Event Listener for when we press the keys
 
 //Texture of the floor
-let floorTexture = new THREE.ImageUtils.loadTexture("images/floor.png"); //ImageUtils is deprecated in the newer versions of THREE.js
+//let floorTexture = new THREE.ImageUtils.loadTexture("images/floor.png"); //ImageUtils is deprecated in the newer versions of THREE.js
 
-//let floorTexture = new THREE.TextureLoader().load('images/floor.png');
+let floorTexture = new THREE.TextureLoader().load("images/floor.png");
 
 //Create the floor plane
 let planeGeometry = new THREE.PlaneGeometry(50, 50);
