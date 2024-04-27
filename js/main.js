@@ -115,6 +115,34 @@ function onKeyDown(event) {
   }
 }
 
+function createPainting(imageURL, width, height, position) {
+  const textureLoader = new THREE.TextureLoader();
+  const paintingTexture = textureLoader.load(imageURL);
+  const paintingMaterial = new THREE.MeshBasicMaterial({
+    map: paintingTexture,
+  });
+  const paintingGeometry = new THREE.PlaneGeometry(width, height);
+  const painting = new THREE.Mesh(paintingGeometry, paintingMaterial);
+  painting.position.set(position.x, position.y, position.z);
+  return painting;
+}
+
+const painting1 = createPainting(
+  "images/Umaru_Drink.jpg",
+  10,
+  5,
+  new THREE.Vector3(10, 5, 20)
+);
+
+const painting2 = createPainting(
+  "images/Umaru_Sleep.jpg",
+  10,
+  5,
+  20,
+  new THREE.Vector3(10, 5, 20)
+);
+scene.add(painting1, painting2);
+
 let renderLoop = function () {
   cube.rotation.x = cube.rotation.x + 0.01;
   cube.rotation.y = cube.rotation.y + 0.01;
